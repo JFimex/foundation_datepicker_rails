@@ -39,6 +39,7 @@
 		var that = this;
 
 		this.element = $(element);
+		this.autoShow = options.autoShow || true;
 		this.closeButton = options.closeButton;
 		this.language = options.language||this.element.data('date-language')||"en";
 		this.language = this.language in dates ? this.language : this.language.split('-')[0]; //Check if "de-DE" style date is available, if not language should fallback to 2 letter code eg "de"
@@ -73,6 +74,8 @@
 							});
 		if (this.closeButton){
 			this.picker.find('a.datepicker-close').show();
+		} else {
+			this.picker.find('a.datepicker-close').hide();
 		}
 
 		if(this.isInline) {
@@ -83,7 +86,7 @@
 		if (this.isRTL){
 			this.picker.addClass('datepicker-rtl');
 			this.picker.find('.prev i, .next i')
-						.toggleClass('icon-chevron-left icon-chevron-right').toggleClass('fa-chevron-left fa-chevron-right');
+						.toggleClass('fa fa-chevron-left fa-chevron-right').toggleClass('fa-chevron-left fa-chevron-right');
 		}
 		$(document).on('mousedown', function (e) {
 			// Clicked outside the datepicker, hide it
@@ -161,7 +164,7 @@
 			if (this.isInput) { // single input
 				this._events = [
 					[this.element, {
-						focus: $.proxy(this.show, this),
+						focus: (this.autoShow)? $.proxy(this.show, this):function(){},
 						keyup: $.proxy(this.update, this),
 						keydown: $.proxy(this.keydown, this)
 					}]
@@ -171,7 +174,7 @@
 				this._events = [
 					// For components that are not readonly, allow keyboard nav
 					[this.element.find('input'), {
-						focus: $.proxy(this.show, this),
+						focus: (this.autoShow)? $.proxy(this.show, this):function(){},
 						keyup: $.proxy(this.update, this),
 						keydown: $.proxy(this.keydown, this)
 					}],
@@ -330,8 +333,8 @@
 		  var fullOffsetTop = offset.top + height;
 		  var offsetLeft = offset.left;
 		  // if the datepicker is going to be below the window, show it on top of the input
-		  if((fullOffsetTop + this.picker.height()) >= $(window).scrollTop() + $(window).height()){
-		  	fullOffsetTop = offset.top - height - this.picker.height();
+		  if((fullOffsetTop + this.picker.outerHeight()) >= $(window).scrollTop() + $(window).height()){
+		  	fullOffsetTop = offset.top - this.picker.outerHeight();
 		  }
 
 		  // if the datepicker is going to go past the right side of the window, we want
@@ -529,7 +532,7 @@
 			e.stopPropagation();
 			e.preventDefault();
 
-			if ($(e.target).hasClass('datepicker-close')){
+			if ($(e.target).hasClass('datepicker-close') || $(e.target).parent().hasClass('datepicker-close')){
 				this.hide();
 			}
 
@@ -826,6 +829,14 @@
 			monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 			today: "Today"
 		},
+		fr: {
+			days: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
+			daysShort: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"],
+			daysMin: ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"],
+			months: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+			monthsShort: ["Jan", "Fev", "Mar", "Avr", "Mai", "Jun", "Jul", "Aoû", "Sep", "Oct", "Nov", "Dec"],
+			today: "Aujourd'hui"
+		},
 		pl: {
 			days: ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota", "Niedziela"],
 			daysShort: ["Nie", "Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nie"],
@@ -850,6 +861,14 @@
 		    monthsShort: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
 		    today: "Hoje"
 		},
+		pt_br: {
+		    days: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"],
+		    daysShort: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+		    daysMin: ["D", "S", "T", "Q", "Q", "S", "S", "D"],
+		    months: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+		    monthsShort: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+		    today: "Hoje"
+		},
 		it: {
 		    days: ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"],
 		    daysShort: ["Dom", "Lun", "Mar", "Mer", "Gio", "Veb", "Sab", "Dom"],
@@ -857,7 +876,63 @@
 		    months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
 		    monthsShort: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
 		    today: "Oggi"
-		}
+		},
+		de: {
+		    days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"],
+		    daysShort: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+		    daysMin: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+		    months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+		    monthsShort: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+		    today: "Heute"
+		},
+		ro: {
+		    days: ["Duminica", "Luni", "Marti", "Miercuri", "Joi", "Vineri", "Sambata", "Duminica"],
+		    daysShort: ["Dum", "Lun", "Mar", "Mie", "Joi", "Vin", "Sam", "Dum"],
+		    daysMin: ["Du", "Lu", "Ma", "Mi", "Jo", "Vi", "Sa", "Du"],
+		    months: ["Ianuarie", "Februarie", "Martie", "Aprilie", "Mai", "Iunie", "Iulie", "August", "Septembrie", "Octombrie", "Noiembrie", "Decembrie"],
+		    monthsShort: ["Ian", "Feb", "Mar", "Apr", "Mai", "Iun", "Iul", "Aug", "Sep", "Oct", "Noi", "Dec"],
+		    today: "Astazi"
+		},
+		hu: {
+		    days: ["Vasárnap", "Hétfő", "Kedd", "Szerda", "Csütörtök", "Péntek", "Szombat", "Vasárnap"],
+		    daysShort: ["Vas", "Hét", "Kedd", "Sze", "Csü", "Pén", "Szo", "Vas"],
+		    daysMin: ["Va", "Hé", "Ke", "Sz", "Cs", "Pé", "Sz", "Va"],
+		    months: ["Január", "Február", "Március", "Április", "Május", "Június", "Július", "Augusztus", "Szeptember", "Október", "November", "December"],
+		    monthsShort: ["Jan", "Feb", "Már", "Ápr", "Máj", "Jún", "Júl", "Aug", "Szep", "Okt", "Nov", "Dec"],
+		    today: "Ma"
+		},
+		ru: {
+			days: ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
+			daysShort: ["Вск", "Пнд", "Втр", "Срд", "Чтв", "Птн", "Суб", "Вск"],
+			daysMin: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
+			months: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
+			monthsShort: ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"],
+			today: "Сегодня"
+		},
+		cz: {
+			days: ["Neděle", "Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota", "Neděle"],
+			daysShort: ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
+			daysMin: ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", "Ne"],
+			months: ["Leden", "Únor", "Březen", "Duben", "Květen", "Červen", "Červenec", "Srpen", "Září", "Říjen", "Listopad", "Prosinec"],
+			monthsShort: ["Led", "Úno", "Bře", "Dub", "Kvě", "Čer", "Čnc", "Srp", "Zář", "Říj", "Lis", "Pro"],
+			today: "Dnes"
+		},
+		nl: {
+			days: ["Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"],
+			daysShort: ["Zon", "Maa", "Din", "Woe", "Don", "Vri", "Zat", "Zon"],
+			daysMin: ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za", "Zo"],
+			months: ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"],
+			monthsShort: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"],
+			today: "Vandaag"
+		},
+		el: {
+            days: ["Κυριακή", "Δευτέρα", "Τρίτη", "Τετάρτη", "Πέμπτη", "Παρασκευή", "Σάββατο", "Κυριακή"],
+            daysShort: ["Κυρ", "Δευ", "Τρί", "Τετ", "Πέμ", "Παρ", "Σάβ", "Κυρ"],
+            daysMin: ["Κυ", "Δε", "Τρ", "Τε", "Πέ", "Πα", "Σά", "Κυ"],
+            months: ["Ιανουάριος", "Φεβρουάριος", "Μάρτιος", "Απρίλιος", "Μάιος", "Ιούνιος", "Ιούλιος", "Αύγουστος", "Σεπτέμβριος", "Οκτώβριος", "Νοέμβριος", "Δεκέμβριος"],
+            monthsShort: ["Ιαν", "Φεβ", "Μαρ", "Απρ", "Μαϊ", "Ιου", "Ιου", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"],
+            today: "Σήμερα"
+        }
 	};
 
 	var DPGlobal = {
@@ -1010,21 +1085,29 @@
 		},
 		headTemplate: '<thead>'+
 							'<tr>'+
-								'<th class="prev"><i class="icon-chevron-left fa fa-chevron-left"/></th>'+
+								'<th class="prev"><i class="fa fa-chevron-left fi-arrow-left"/></th>'+
 								'<th colspan="5" class="date-switch"></th>'+
-								'<th class="next"><i class="icon-chevron-right fa fa-chevron-right"/></th>'+
+								'<th class="next"><i class="fa fa-chevron-right fi-arrow-right"/></th>'+
 							'</tr>'+
 						'</thead>',
 		contTemplate: '<tbody><tr><td colspan="7"></td></tr></tbody>',
-		footTemplate: '<tfoot><tr><th colspan="7" class="today"></th></tr></tfoot>'
+		footTemplate: '<tfoot><tr><th colspan="7" class="today"></th></tr></tfoot>',
+		headTemplateDays: '<thead>'+
+							'<tr>'+
+								'<th class="prev"><i class="fa fa-chevron-left fi-arrow-left"/></th>'+
+								'<th colspan="5" class="date-switch"></th>'+
+								'<th class="next"><i class="fa fa-chevron-right fi-arrow-right"/></th>'+
+							'</tr>'+
+						  '</thead>',
+		footTemplateDays: '<tfoot><tr><th colspan="7" class="today"></th></tr></tfoot>'
 	};
 	DPGlobal.template = '<div class="datepicker">'+
 
 							'<div class="datepicker-days">'+
 								'<table class=" table-condensed">'+
-									DPGlobal.headTemplate+
+									DPGlobal.headTemplateDays+
 									'<tbody></tbody>'+
-									DPGlobal.footTemplate+
+									DPGlobal.footTemplateDays+
 								'</table>'+
 							'</div>'+
 							'<div class="datepicker-months">'+
@@ -1041,7 +1124,7 @@
 									DPGlobal.footTemplate+
 								'</table>'+
 							'</div>'+
-							'<a class="button datepicker-close small alert right" style="width:auto;"><i class="icon-remove fa fa-times"></i></a>'+
+							'<a class="button datepicker-close tiny alert right" style="width:auto;"><i class="fa fa-remove fa-times fi-x"></i></a>'+
 						'</div>';
 
 	$.fn.fdatepicker.DPGlobal = DPGlobal;
