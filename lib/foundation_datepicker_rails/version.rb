@@ -1,3 +1,3 @@
 module FoundationDatepickerRails
-  VERSION = "0.0.3b"
+  VERSION = "0.0.3"
 end
